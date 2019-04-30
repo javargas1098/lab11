@@ -8,6 +8,9 @@ import java.util.logging.Logger;
 
 import org.springframework.stereotype.Component;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import edu.eci.arsw.cinema.model.Cinema;
 import edu.eci.arsw.cinema.model.CinemaFunction;
 import edu.eci.arsw.cinema.model.Movie;
@@ -20,26 +23,26 @@ import edu.eci.arsw.cinema.util.RedisMethods;
 public class RedisCinemaPersistence implements CinemaPersitence {
 	
 	public RedisCinemaPersistence() {
-		String functionDate = "2018-12-18 15:30";
-		String functionDate2 = "2018-12-18 15:30";
-		List<CinemaFunction> functionsX = new ArrayList<>();
-		CinemaFunction funct1 = new CinemaFunction(new Movie("SuperHeroes Movie", "Action"), functionDate);
-		CinemaFunction funct2 = new CinemaFunction(new Movie("The Night", "Horror"), functionDate);
-		CinemaFunction funct3 = new CinemaFunction(new Movie("SuperHeroes Movie 2", "Action"), functionDate2);
-		CinemaFunction funct4 = new CinemaFunction(new Movie("SuperHeroes Movie", "Action"),functionDate);
-		try {
-		   //LOAD DATA FROM REDIS
-		   funct1.setSeats(RedisMethods.getSeatsRedis("cinemaX",funct1));
-		   funct2.setSeats(RedisMethods.getSeatsRedis("cinemaX",funct2));
-		   funct3.setSeats(RedisMethods.getSeatsRedis("cinemaY",funct3));
-		   funct4.setNumSeats(RedisMethods.getSeatsRedis("cinemaY",funct4));
-		} catch (CinemaException ex) {
-		   Logger.getLogger(RedisCinemaPersistence.class.getName()).log(Level.SEVERE, null, ex);
-		}
-		functionsX.add(funct1);
-		functionsX.add(funct2);
-		functionsX.add(funct3);
-		functionsX.add(funct4);
+//		String functionDate = "2018-12-18 15:30";
+//		String functionDate2 = "2018-12-18 15:30";
+//		List<CinemaFunction> functionsX = new ArrayList<>();
+//		CinemaFunction funct1 = new CinemaFunction(new Movie("SuperHeroes Movie", "Action"), functionDate);
+//		CinemaFunction funct2 = new CinemaFunction(new Movie("The Night", "Horror"), functionDate);
+//		CinemaFunction funct3 = new CinemaFunction(new Movie("SuperHeroes Movie 2", "Action"), functionDate2);
+//		CinemaFunction funct4 = new CinemaFunction(new Movie("SuperHeroes Movie", "Action"),functionDate);
+//		try {
+//		   //LOAD DATA FROM REDIS
+//		   funct1.setSeats(RedisMethods.getSeatsRedis("cinemaX",funct1));
+//		   funct2.setSeats(RedisMethods.getSeatsRedis("cinemaX",funct2));
+//		   funct3.setSeats(RedisMethods.getSeatsRedis("cinemaY",funct3));
+//		   funct4.setNumSeats(RedisMethods.getSeatsRedis("cinemaY",funct4));
+//		} catch (CinemaException ex) {
+//		   Logger.getLogger(RedisCinemaPersistence.class.getName()).log(Level.SEVERE, null, ex);
+//		}
+//		functionsX.add(funct1);
+//		functionsX.add(funct2);
+//		functionsX.add(funct3);
+//		functionsX.add(funct4);
 		// TODO Auto-generated constructor stub
 	}
 
@@ -84,6 +87,14 @@ public class RedisCinemaPersistence implements CinemaPersitence {
 	@Override
 	public void addfuntion(String name, CinemaFunction funtion) {
 		// TODO Auto-generated method stub
+		String key = new StringBuffer().append(name).append(funtion.getDate()).append(funtion.getMovie().getName()).toString();
+		ObjectMapper mapper = new ObjectMapper();
+		try {
+			String data = mapper.writeValueAsString(funtion.getSeats());
+			RedisMethods.saveToREDIS(key, data);
+		} catch (JsonProcessingException e) {
+			e.printStackTrace();
+		}
 		
 	}
 

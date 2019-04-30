@@ -1,5 +1,7 @@
 package edu.eci.arsw.cinema.util;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import edu.eci.arsw.cinema.model.CinemaFunction;
@@ -30,18 +32,25 @@ public class RedisMethods {
 			if (result.size() > 0) {
 				intentar = false;
 				content = data.get();
-				// Cerrar recurso jedis
 				jedis.close();
 			}
 		}
 		return content;
 	}
 
+	public static List<List<Boolean>> buyTicketRedis(String key) {
+		String tickets = getFromREDIS(key);
+		String str[] = tickets.split("],");
+		List<String> al = new ArrayList<String>();
+		al = Arrays.asList(str);
+		System.out.println(al);
+		return null;
 
+	}
 
 	public static void main(String[] args) {
 		// saveToREDIS("this is test","this is values of the test");
-		System.out.println(getFromREDIS("this is test"));
+		System.out.println(buyTicketRedis("cinemaY2018-12-18 15:30The Enigma"));
 		System.out.println("....//");
 	}
 
